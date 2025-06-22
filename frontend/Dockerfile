@@ -10,14 +10,19 @@ RUN mkdir -p $ANDROID_SDK_ROOT/cmdline-tools && \
 
 ENV PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
 RUN yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses && \
-    sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platform-tools" "platforms;android-33" "build-tools;33.0.0"
+    sdkmanager --sdk_root=$ANDROID_SDK_ROOT \
+        "platform-tools" \
+        "platforms;android-33" \
+        "build-tools;33.0.0" \
+        "build-tools;30.0.3"
 
 RUN git clone --branch 3.10.5 https://github.com/flutter/flutter.git /opt/flutter
 
 RUN useradd -ms /bin/bash flutteruser
 
 RUN chown -R flutteruser:flutteruser /opt/flutter && \
-    git config --global --add safe.directory /opt/flutter
+    git config --global --add safe.directory /opt/flutter && \
+    chown -R flutteruser:flutteruser $ANDROID_SDK_ROOT
 
 ENV PATH="/opt/flutter/bin:/opt/flutter/bin/cache/dart-sdk/bin:$PATH"
 
