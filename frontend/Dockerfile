@@ -1,4 +1,4 @@
-FROM ghcr.io/flutter-dev/flutter:3.13.0
+FROM cirrusci/flutter:stable
 
 # Create non-root user for running Flutter commands
 RUN useradd -ms /bin/bash flutteruser
