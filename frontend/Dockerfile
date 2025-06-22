@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 
-RUN apt-get update && apt-get install -y git curl unzip xz-utils zip wget bsdtar openjdk-11-jdk libglu1-mesa && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y git curl unzip xz-utils zip wget libarchive-tools openjdk-11-jdk libglu1-mesa && rm -rf /var/lib/apt/lists/*
 
 ENV ANDROID_SDK_ROOT="/opt/android-sdk"
 RUN mkdir -p $ANDROID_SDK_ROOT/cmdline-tools && \
