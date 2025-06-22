@@ -5,7 +5,8 @@ RUN apt-get update && apt-get install -y git curl unzip xz-utils zip wget libarc
 ENV ANDROID_SDK_ROOT="/opt/android-sdk"
 RUN mkdir -p $ANDROID_SDK_ROOT/cmdline-tools && \
     wget -qO- https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip | bsdtar -xvf- -C $ANDROID_SDK_ROOT/cmdline-tools && \
-    mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest
+    mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest && \
+    chmod -R a+rx $ANDROID_SDK_ROOT/cmdline-tools/latest/bin
 
 ENV PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
 RUN yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses && \
