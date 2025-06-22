@@ -16,6 +16,7 @@ WORKDIR /app
 RUN flutter create . --template app
 
 RUN chown -R flutteruser:flutteruser /opt/flutter
+RUN chown -R flutteruser:flutteruser /app
 
 USER flutteruser
 RUN flutter pub get \
