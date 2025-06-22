@@ -25,14 +25,11 @@ services:
       - "8000:8000"
 
   frontend:
-    image: cirrusci/flutter:stable
     build: ./frontend
     env_file: .env
     command: >
-      sh -c "flutter pub get && flutter build web --${FLUTTER_BUILD_MODE:-release} && cd build/web && python3 -m http.server 8080"
+      sh -c "flutter pub get && flutter build apk --${FLUTTER_BUILD_MODE:-release}"
     volumes:
       - ./frontend:/app
     depends_on:
       - backend
-    ports:
-      - "8080:8080"

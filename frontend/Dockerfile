@@ -1,18 +1,15 @@
-FROM cirrusci/flutter:stable
+FROM cirrusci/flutter:latest
 
-# Create non-root user for running Flutter commands
-RUN useradd -ms /bin/bash flutteruser
+RUN git clone --branch 3.10.5 https://github.com/flutter/flutter.git /opt/flutter && \
+    useradd -ms /bin/bash flutteruser && \
+    chown -R flutteruser:flutteruser /opt/flutter && \
+    git config --global --add safe.directory /opt/flutter
 
+ENV PATH="/opt/flutter/bin:${PATH}"
+
+COPY --chown=flutteruser:flutteruser . /app
 WORKDIR /app
-COPY --chown=flutteruser:flutteruser . .
-
-RUN chown -R flutteruser:flutteruser /sdks/flutter && \
-    git config --global --add safe.directory /sdks/flutter
-
 USER flutteruser
 
-RUN flutter pub get
-
-EXPOSE 8080
-
-CMD ["sh", "-c", "flutter build web --${FLUTTER_BUILD_MODE:-release} && cd build/web && python3 -m http.server 8080"]
+RUN flutter pub get && \
+    flutter build apk --release
