@@ -7,14 +7,15 @@ RUN git clone --branch 3.10.5 https://github.com/flutter/flutter.git /opt/flutte
 RUN useradd -ms /bin/bash flutteruser
 
 RUN chown -R flutteruser:flutteruser /opt/flutter \
-    && git config --global --add safe.directory /opt/flutter \
-    && chown -R flutteruser:flutteruser /opt/flutter/bin/cache
+    && git config --global --add safe.directory /opt/flutter
 
 ENV PATH="/opt/flutter/bin:/opt/flutter/bin/cache/dart-sdk/bin:${PATH}"
 
 COPY . /app
 WORKDIR /app
 RUN flutter create . --template app
+
+RUN chown -R flutteruser:flutteruser /opt/flutter/bin/cache
 
 USER flutteruser
 RUN flutter pub get \
