@@ -1,7 +1,12 @@
-FROM cirrusci/flutter:latest
+FROM ghcr.io/flutter-dev/flutter:3.13.0
+
+# Create non-root user for running Flutter commands
+RUN useradd -ms /bin/bash flutteruser
 
 WORKDIR /app
-COPY . .
+COPY --chown=flutteruser:flutteruser . .
+
+USER flutteruser
 
 RUN flutter pub get
 
