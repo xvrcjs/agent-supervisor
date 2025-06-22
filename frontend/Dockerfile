@@ -12,31 +12,27 @@ RUN mkdir -p $ANDROID_SDK_ROOT/cmdline-tools && \
 
 # 3. Install Android tools and accept licenses
 ENV PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
-RUN yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses && \
-    sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platform-tools" "platforms;android-33" "build-tools;33.0.0"
+RUN useradd -ms /bin/bash flutteruser && \
+    yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses && \
+    sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platform-tools" "platforms;android-33" "build-tools;33.0.0" "build-tools;30.0.3" && \
+    chown -R flutteruser:flutteruser $ANDROID_SDK_ROOT
 
-# 4. Clone Flutter and create user
+# 4. Clone Flutter
 RUN git clone --branch 3.10.5 https://github.com/flutter/flutter.git /opt/flutter && \
-    useradd -ms /bin/bash flutteruser && \
     chown -R flutteruser:flutteruser /opt/flutter && \
     git config --global --add safe.directory /opt/flutter
 
 # 5. Configure Flutter PATH
 ENV PATH="/opt/flutter/bin:/opt/flutter/bin/cache/dart-sdk/bin:$PATH"
 
-# 6. Scaffold temp project and merge code
-WORKDIR /
-RUN flutter create temp_app --template app
-COPY lib/ temp_app/lib/
-COPY assets/ temp_app/assets/
-COPY pubspec.yaml temp_app/pubspec.yaml
-
-# 7. Adjust permissions and build
-RUN chown -R flutteruser:flutteruser /opt/flutter && \
-    chown -R flutteruser:flutteruser temp_app
+# 6. Copy project and build APK
+WORKDIR /app
+COPY . /app
+RUN chown -R flutteruser:flutteruser /app
 USER flutteruser
-WORKDIR /temp_app
-RUN flutter pub get && flutter build apk --release
+RUN flutter create . --template app
+RUN flutter pub get
+RUN flutter build apk --release
 
 # 8. Expose port
 EXPOSE 8080
