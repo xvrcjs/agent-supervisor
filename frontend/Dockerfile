@@ -6,6 +6,9 @@ RUN useradd -ms /bin/bash flutteruser
 WORKDIR /app
 COPY --chown=flutteruser:flutteruser . .
 
+RUN chown -R flutteruser:flutteruser /sdks/flutter && \
+    git config --global --add safe.directory /sdks/flutter
+
 USER flutteruser
 
 RUN flutter pub get
