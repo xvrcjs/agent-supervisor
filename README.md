@@ -1,51 +1,61 @@
 # Agent Supervisor – Monitoreo de Uso de Celulares
 
-## Objetivo
-Desarrollar un agente IA móvil que capture periódicamente pantallazos de YouTube en el dispositivo del niño, analice el contenido y, si detecta parámetros fuera de lo permitido, notifique al tutor vía WhatsApp o active una alerta sonora.
+## Project Overview
+Agent Supervisor es un MVP Android y web que monitorea el uso de YouTube mediante un agente de IA. El sistema captura pantallas del dispositivo, analiza su contenido y, si detecta parámetros no permitidos, notifica al tutor por WhatsApp o emite una alerta.
 
-## Tecnologías y Stack
-- **Backend:** Python 3.11, Django 4.x, Django REST Framework  
-- **Base de Datos:** PostgreSQL 15  
-- **Frontend:** Dart, Flutter (Android MVP + web)  
-- **Contenerización:** Docker & Docker Compose  
-- **Comunicación:** HTTP/REST  
-- **Servicios Adicionales:** Redis, RabbitMQ (o Celery+Redis), Elasticsearch (opcional)
-
-## Estructura de Carpetas
-```bash
-/backend    # Código Django + DRF
-/frontend   # Código Flutter
-/infra      # docker-compose.yml, scripts y configuraciones
+```
+[Flutter Web/Android] <---> [Django REST API] <---> [PostgreSQL]
 ```
 
-## Levantamiento
+## Directory Structure
+- **/backend** – API REST con Django y DRF
+- **/frontend** – Aplicación Flutter (web para pruebas)
+- **/db** – Directorio de datos de PostgreSQL
+- **docker-compose.yml** – Orquestación de servicios
+- **.env.example** – Variables de entorno de ejemplo
+
+## Prerequisitos
+- Docker y Docker Compose
+- Flutter SDK (para pruebas en Android)
+- Android Studio o emulador configurado
+
+## Configuración del Entorno
+1. Copia `.env.example` a `.env` y edita los valores según tu entorno.
+2. Asegúrate de que las variables de la base de datos y Django coincidan con tu configuración.
+
+## Construcción y Ejecución
 ```bash
-# Desde la raíz del repositorio:
-docker-compose up --build -d
+docker-compose up --build
+```
+- API disponible en [http://localhost:8000](http://localhost:8000)
+- Interfaz Flutter web en [http://localhost:8080](http://localhost:8080)
+
+## Pruebas en Android
+```bash
+cd frontend
+flutter pub get
+flutter run --debug # especifica dispositivo si es necesario
+```
+Actualiza la URL base de la API en tu aplicación para apuntar a `http://localhost:8000` cuando pruebes en el emulador o dispositivo.
+
+## Gestión de la Base de Datos
+Puedes acceder al contenedor de PostgreSQL con:
+```bash
+docker exec -it $(docker compose ps -q db) psql -U $POSTGRES_USER $POSTGRES_DB
+```
+Ejecuta migraciones manualmente si lo requieres:
+```bash
+docker compose exec backend python manage.py migrate
 ```
 
-### Variables de entorno obligatorias
-- `POSTGRES_USER`  
-- `POSTGRES_PASSWORD`  
-- `POSTGRES_DB`  
-- `DB_HOST`  
-- `DB_PORT`  
-- `DJANGO_SECRET_KEY`  
-- `DJANGO_DEBUG`  
-- `FLUTTER_BUILD_MODE`  
-- `WHATSAPP_API_TOKEN`  
-- `ALLOWED_YOUTUBE_CATEGORIES`
+## Solución de Problemas
+- **Variables de entorno faltantes:** verifica tu archivo `.env`.
+- **Puertos en uso:** asegúrate de que 5432, 8000 y 8080 estén libres.
 
-## Convenciones y Estándares
-- **Ramas:**  
-  - `main` (producción)  
-  - `develop` (integración de features)  
-  - `feature/<nombre-corto>`  
-  - `hotfix/<nombre-corto>`  
-- **Lint / Formateo:**  
-  - Backend: Black, isort, Flake8  
-  - Frontend: `dart format`, `dart analyze`  
-  - Dockerfiles & YAML: hadolint, yamllint  
-- **CI/CD (GitHub Actions):**  
-  - `ci.yml` en `pull_request` y `push` a `develop/feature/*`  
-  - `cd.yml` en `push` a `main` con build, test, publicación y despliegue
+## Comandos Útiles
+- `docker compose logs -f backend` – Ver logs del backend
+- `docker compose logs -f frontend` – Ver logs del frontend
+- `docker compose logs -f db` – Ver logs de PostgreSQL
+
+## Contribución y Licencia
+Las contribuciones son bienvenidas mediante issues y pull requests. Este proyecto se distribuye bajo la licencia MIT.
