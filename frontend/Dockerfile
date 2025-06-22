@@ -15,7 +15,7 @@ COPY . /app
 WORKDIR /app
 RUN flutter create . --template app
 
-RUN chown -R flutteruser:flutteruser /opt/flutter/bin/cache
+RUN chown -R flutteruser:flutteruser /opt/flutter
 
 USER flutteruser
 RUN flutter pub get \
