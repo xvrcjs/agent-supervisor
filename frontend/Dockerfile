@@ -33,6 +33,7 @@ RUN chown -R flutteruser:flutteruser /opt/flutter && \
     chown -R flutteruser:flutteruser /app
 
 USER flutteruser
-RUN flutter pub get && flutter build apk --release
+RUN flutter pub get
+RUN flutter build apk --release
 
 EXPOSE 8080

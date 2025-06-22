@@ -1,0 +1,7 @@
+platform :ios, '11.0'
+
+install!
+  all_projects: true
+
+flutter_application_path = File.join('..', 'frontend')
+load File.join(flutter_application_path, '.ios', 'Flutter', 'podhelper.rb')
