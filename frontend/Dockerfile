@@ -28,7 +28,6 @@ ENV PATH="/opt/flutter/bin:/opt/flutter/bin/cache/dart-sdk/bin:$PATH"
 
 COPY . /app
 WORKDIR /app
-RUN flutter create . --template app
 
 RUN chown -R flutteruser:flutteruser /opt/flutter && \
     chown -R flutteruser:flutteruser /app
