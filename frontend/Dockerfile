@@ -1,25 +1,33 @@
 FROM ubuntu:22.04
 
-RUN apt-get update && apt-get install -y git curl unzip xz-utils zip openjdk-11-jdk libglu1-mesa && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y git curl unzip xz-utils zip wget openjdk-11-jdk libglu1-mesa && rm -rf /var/lib/apt/lists/*
+
+ENV ANDROID_SDK_ROOT="/opt/android-sdk"
+RUN mkdir -p $ANDROID_SDK_ROOT/cmdline-tools && \
+    wget -qO- https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip | bsdtar -xvf- -C $ANDROID_SDK_ROOT/cmdline-tools && \
+    mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest
+
+ENV PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
+RUN yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses && \
+    sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platform-tools" "platforms;android-33" "build-tools;33.0.0"
 
 RUN git clone --branch 3.10.5 https://github.com/flutter/flutter.git /opt/flutter
 
 RUN useradd -ms /bin/bash flutteruser
 
-RUN chown -R flutteruser:flutteruser /opt/flutter \
-    && git config --global --add safe.directory /opt/flutter
+RUN chown -R flutteruser:flutteruser /opt/flutter && \
+    git config --global --add safe.directory /opt/flutter
 
-ENV PATH="/opt/flutter/bin:/opt/flutter/bin/cache/dart-sdk/bin:${PATH}"
+ENV PATH="/opt/flutter/bin:/opt/flutter/bin/cache/dart-sdk/bin:$PATH"
 
 COPY . /app
 WORKDIR /app
 RUN flutter create . --template app
 
-RUN chown -R flutteruser:flutteruser /opt/flutter
-RUN chown -R flutteruser:flutteruser /app
+RUN chown -R flutteruser:flutteruser /opt/flutter && \
+    chown -R flutteruser:flutteruser /app
 
 USER flutteruser
-RUN flutter pub get \
-    && flutter build apk --release
+RUN flutter pub get && flutter build apk --release
 
 EXPOSE 8080
